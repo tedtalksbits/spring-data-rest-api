@@ -34,17 +34,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authorizationHeader = request.getHeader("Authorization");
+//        final String cookieValue = request.getHeader("Authorization");
+        final String cookieValue = extractTokenFromCookie(request);
         String jwt;
         String username;
 
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+        if (cookieValue == null) {
         //   if the request does not have header Authorization or a valid JWT token, then the request will be passed to the next filter
             filterChain.doFilter(request, response);
             return;
         }
-        //  if the request has a valid JWT token, then the token will be extracted from the header: remove the "Bearer " part which is the first 7 characters
-        jwt = authorizationHeader.substring(7);
+        //  The cookie just contains the JWT token, add the Bearer prefix to the token
+        jwt = cookieValue;
         username = jwtService.extractUsername(jwt);
 
         // The SecurityContextHolder is a class that stores the details of the currently authenticated user
@@ -73,5 +74,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // pass the request to the next filter
         filterChain.doFilter(request, response);
 
+    }
+
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        String jwt = null;
+        if(request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if(cookie.getName().equals("token")) {
+                    jwt = cookie.getValue();
+                }
+            }
+        }
+        return jwt;
     }
 }
