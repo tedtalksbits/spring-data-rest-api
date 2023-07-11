@@ -7,6 +7,7 @@ import com.tedaneblake.ankirestapi.models.LoginRequest;
 import com.tedaneblake.ankirestapi.models.RegisterRequest;
 import com.tedaneblake.ankirestapi.services.AuthServices;
 import com.tedaneblake.ankirestapi.services.UserServices;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +26,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request){
-        return ResponseEntity.ok(authServices.login(request));
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request, HttpServletResponse response){
+        return ResponseEntity.ok(authServices.login(request, response));
     }
 
     @PostMapping("/register")
