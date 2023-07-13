@@ -1,5 +1,6 @@
 package com.tedaneblake.ankirestapi.services;
 
+import com.tedaneblake.ankirestapi.DTOs.UserDTO;
 import com.tedaneblake.ankirestapi.config.JwtService;
 import com.tedaneblake.ankirestapi.exceptions.ObjectNotFoundException;
 import com.tedaneblake.ankirestapi.models.*;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -58,5 +60,21 @@ public class AuthServices {
         var jwtToken = jwtService.generateToken(user);
 
         return new AuthenticationResponse(jwtToken);
+    }
+
+    public UserDTO me(Authentication authentication) {
+        var user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new ObjectNotFoundException("User not found"));
+        return user.toDTO();
+    }
+
+
+    public Object logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .maxAge(0)
+                .path("/")
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+        return null;
     }
 }

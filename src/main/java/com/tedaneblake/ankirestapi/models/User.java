@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+import com.tedaneblake.ankirestapi.DTOs.UserDTO;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -167,4 +168,7 @@ public class User implements UserDetails {
     return List.of(new SimpleGrantedAuthority(role.name()));
   }
 
+  public UserDTO toDTO() {
+    return new UserDTO(this.id, this.username, this.email, this.name, this.avatar, this.nickname, this.lastLogin);
+  }
 }

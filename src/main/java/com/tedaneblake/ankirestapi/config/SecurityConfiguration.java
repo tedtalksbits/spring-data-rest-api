@@ -42,6 +42,8 @@ public class SecurityConfiguration {
                 // public routes
                 .requestMatchers("/api/auth/**")
                 .permitAll()
+                .requestMatchers("/api/auth/me")
+                .authenticated()
                 // auth routes (everything else)
                 .anyRequest()
                 .authenticated()
